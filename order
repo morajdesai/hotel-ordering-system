@@ -1,0 +1,144 @@
+// HOTEL ORDERING & COMBO SUGGESTION SYSTEM
+// Mini Project using JavaScript (Node.js)
+
+const readline = require("readline");
+
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
+console.log("===================================");
+console.log("        WELCOME TO STAR HOTEL");
+console.log("===================================");
+
+// ---------------- MENU ----------------
+const menu = {
+    1: ["Tea", 15],
+    2: ["Coffee", 20],
+    3: ["Milk", 20],
+    4: ["Fresh Lime", 25],
+    5: ["Badam Milk", 30],
+
+    6: ["Idli", 30],
+    7: ["Dosa", 50],
+    8: ["Masala Dosa", 70],
+    9: ["Pongal", 50],
+    10: ["Poori", 60],
+
+    11: ["Veg Fried Rice", 90],
+    12: ["Veg Noodles", 90],
+    13: ["Veg Biriyani", 120],
+    14: ["Curd Rice", 60],
+    15: ["Lemon Rice", 60],
+
+    16: ["Veg Meals", 120],
+    17: ["Mini Meals", 90],
+    18: ["Chapati Set", 80],
+    19: ["Paneer Butter Masala", 140],
+    20: ["Gobi Manchurian", 80],
+
+    21: ["Veg Burger", 100],
+    22: ["Veg Sandwich", 70],
+    23: ["French Fries", 90],
+    24: ["Veg Roll", 80],
+    25: ["Paneer Roll", 110],
+
+    26: ["Ice Cream", 50],
+    27: ["Falooda", 90],
+    28: ["Fresh Juice", 60],
+    29: ["Fruit Salad", 70],
+    30: ["Exit", 0]
+};
+
+let total = 0;
+let orders = [];
+
+function showMenu() {
+    console.log("\n------------ MENU ------------");
+    for (let key in menu) {
+        console.log(`${key}. ${menu[key][0]} - Rs.${menu[key][1]}`);
+    }
+}
+
+function askChoice() {
+    showMenu();
+    rl.question("\nEnter your choice: ", (choice) => {
+        choice = parseInt(choice);
+
+        if (choice === 30) {
+            printBill();
+            return;
+        }
+
+        if (!menu[choice]) {
+            console.log("Invalid choice ❌");
+            askChoice();
+            return;
+        }
+
+        rl.question("Enter quantity: ", (qty) => {
+            qty = parseInt(qty);
+
+            if (qty <= 0) {
+                console.log("Quantity must be greater than 0 ❌");
+                askChoice();
+                return;
+            }
+
+            let item = menu[choice][0];
+            let price = menu[choice][1];
+            let cost = price * qty;
+
+            total += cost;
+            orders.push([item, qty, cost]);
+
+            console.log(`${item} x ${qty} = Rs.${cost}`);
+            console.log(`Current Total = Rs.${total}`);
+
+            askChoice();
+        });
+    });
+}
+
+function printBill() {
+    console.log("\n================ BILL =================");
+    orders.forEach(item => {
+        console.log(`${item[0]} x ${item[1]} = Rs.${item[2]}`);
+    });
+    console.log("--------------------------------------");
+    console.log(`TOTAL AMOUNT = Rs.${total}`);
+    console.log("======================================");
+
+    showCombos();
+}
+
+function showCombos() {
+    const combos = {
+        100: [["Tea + Idli", 45], ["Coffee + Veg Sandwich", 90]],
+        200: [["Tea + Dosa + Veg Sandwich", 135]],
+        300: [["Milk + Veg Fried Rice + Ice Cream", 160]],
+        400: [["Coffee + Veg Meals + Ice Cream", 205]],
+        500: [["Veg Meals + Veg Biriyani + Falooda", 330]],
+        1000: [["Full Combo Meal + Dessert", 500]]
+    };
+
+    rl.question("\nEnter your budget (100–1000): ", (budget) => {
+        budget = parseInt(budget);
+
+        console.log("\n🍽️ COMBO SUGGESTIONS 🍽️");
+        for (let key in combos) {
+            if (key <= budget) {
+                console.log(`\nWith Rs.${key}, you can enjoy:`);
+                combos[key].forEach((c, i) => {
+                    console.log(`${i + 1}. ${c[0]} = Rs.${c[1]}`);
+                });
+            }
+        }
+
+        console.log("\n🙏 Thank you for visiting Star Hotel 🙏");
+        rl.close();
+    });
+}
+
+askChoice();
